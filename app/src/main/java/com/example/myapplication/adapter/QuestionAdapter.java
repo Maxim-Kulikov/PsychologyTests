@@ -4,6 +4,7 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CompoundButton;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
@@ -16,15 +17,19 @@ import com.example.myapplication.model.Answer;
 import com.example.myapplication.model.Question;
 import com.example.myapplication.model.Test;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class QuestionAdapter extends RecyclerView.Adapter<QuestionAdapter.ViewHolder> {
     private Test test;
     private Context context;
+    private Map<Integer, Integer> checkedIds;
 
     public QuestionAdapter(Context context, Test test) {
         this.test = test;
         this.context = context;
+        this.checkedIds = new HashMap<>();
     }
 
     @NonNull
@@ -39,24 +44,32 @@ public class QuestionAdapter extends RecyclerView.Adapter<QuestionAdapter.ViewHo
         Question question = test.getQuestions().get(position);
         final int idQuestion = position;
         holder.questionTextView.setText(question.getQuestion());
-
         holder.answerRadioGroup.removeAllViews(); // Очищаем список RadioButton
 
         List<Answer> answers = test.getAnswers();
         for (Answer answer : answers) {
             RadioButton radioButton = new RadioButton(context);
             radioButton.setText(answer.getAnswer());
+            radioButton.setId(answer.getId());
+
+            if (checkedIds.containsKey(idQuestion) && checkedIds.get(idQuestion) == answer.getId()) {
+                radioButton.setChecked(true);
+            } else {
+                radioButton.setChecked(false);
+            }
+
+            radioButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    checkedIds.put(idQuestion, radioButton.getId());
+                    test.getQuestions().get(idQuestion).setIdAnswer(answer.getId());
+                    notifyDataSetChanged();
+                }
+            });
+
             holder.answerRadioGroup.addView(radioButton);
         }
 
-        holder.answerRadioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(RadioGroup group, int checkedId) {
-                View radioButton = group.findViewById(checkedId);
-                int idx = group.indexOfChild(radioButton);
-                test.getQuestions().get(idQuestion).setIdAnswer(idx);
-            }
-        });
     }
 
 

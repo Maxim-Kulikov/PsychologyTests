@@ -3,22 +3,12 @@
     {
       "id": 0,
       "answer": "да",
-      "value": 2
+      "value": 0
     },
     {
       "id": 1,
-      "answer": "скорее да",
-      "value": 1
-    },
-    {
-      "id": 2,
-      "answer": "скорее нет",
-      "value": -1
-    },
-    {
-      "id": 3,
       "answer": "нет",
-      "value": -2
+      "value": 0
     }
   ]
 }

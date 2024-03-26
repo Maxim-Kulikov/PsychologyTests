@@ -11,11 +11,14 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.myapplication.model.Question;
 import com.example.myapplication.model.Test;
+import com.example.myapplication.service.ResultCounter;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
 public class TestResultActivity extends AppCompatActivity {
+
+    private ResultCounter resultCounter = ResultCounter.INSTANCE;
 
     @SuppressLint("MissingInflatedId")
     @Override
@@ -25,11 +28,7 @@ public class TestResultActivity extends AppCompatActivity {
 
         TextView resultText = findViewById(R.id.resultText);
         Test test = (Test) getIntent().getSerializableExtra("test");
-        resultText.setText(
-                test.getQuestions()
-                        .stream()
-                        .map(question -> question.getQuestion() + " = " + question.getIdAnswer() + "\n")
-                        .collect(Collectors.joining()));
+        resultText.setText(resultCounter.getResult(test));
 
         Button finishButton = findViewById(R.id.finishButton);
         finishButton.setOnClickListener(new View.OnClickListener() {

@@ -47,6 +47,7 @@ public class TestParser {
             JSONObject testObject = new JSONObject(jsonString);
             int id = testObject.getInt("id");
             String name = testObject.getString("name");
+            String formula = testObject.getString("formula");
             JSONArray questionsArray = testObject.getJSONArray("questions");
             List<Question> questions = new ArrayList<>();
 
@@ -58,7 +59,7 @@ public class TestParser {
             }
 
 
-            return new Test(id, name, questions, parseAnswers(fileName, context));
+            return new Test(id, name, formula, questions, parseAnswers(fileName, context));
         } catch (Exception e) {
             e.printStackTrace();
             return null;
