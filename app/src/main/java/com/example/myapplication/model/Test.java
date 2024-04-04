@@ -5,6 +5,7 @@ import java.util.List;
 
 public class Test implements Serializable {
     private int id;
+    private int idTopic;
     private String name;
     private String formula;
     private List<Question> questions;
@@ -34,6 +35,14 @@ public class Test implements Serializable {
         return formula;
     }
 
+    public int getIdTopic() {
+        return idTopic;
+    }
+
+    public void setIdTopic(int idTopic) {
+        this.idTopic = idTopic;
+    }
+
     public void setFormula(String formula) {
         this.formula = formula;
     }
@@ -50,8 +59,9 @@ public class Test implements Serializable {
         this.answers = answers;
     }
 
-    public Test(int id, String name, String formula, List<Question> questions, List<Answer> answers) {
+    public Test(int id, int idTopic, String name, String formula, List<Question> questions, List<Answer> answers) {
         this.id = id;
+        this.idTopic = idTopic;
         this.name = name;
         this.formula = formula;
         this.questions = questions;

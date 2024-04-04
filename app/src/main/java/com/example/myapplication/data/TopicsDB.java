@@ -2,21 +2,21 @@ package com.example.myapplication.data;
 
 import android.content.Context;
 
-import com.example.myapplication.model.Test;
+import com.example.myapplication.model.Topic;
 import com.example.myapplication.util.TestParser;
 
 import java.util.List;
 
-public enum TestsDB {
+public enum TopicsDB {
     INSTANCE;
 
-    private List<Test> tests;
+    private List<Topic> topics;
 
     public void initialize(Context context) {
-        tests = TestParser.parseTests(context);
+        topics = TestParser.parseTopics(context);
     }
 
-    public List<Test> getTests() {
-        return tests;
+    public List<Topic> getTopics() {
+        return topics;
     }
 }

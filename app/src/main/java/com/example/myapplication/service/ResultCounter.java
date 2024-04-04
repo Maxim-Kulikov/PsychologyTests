@@ -22,7 +22,7 @@ public enum ResultCounter {
 
         String[] parts = formula.split("OR");
         for (String part : parts) {
-            String[] args = part.split("%");
+            String[] args = part.split("@");
             Part part1 = new Part();
             part1.arg = args[0];
             part1.expr = args[1];
