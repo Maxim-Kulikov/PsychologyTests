@@ -39,19 +39,50 @@ public enum ResultCounter {
         List<Answer> answers = test.getAnswers().getAnswers();
 
         for (Part part : partList) {
-            long countArgs = questions.stream()
-                    .filter(question -> Objects.equals(answers.get(question.getIdAnswer()).getAnswer(), part.arg))
-                    .count();
-            if ((part.expr.equals("<=") && countArgs <= part.value)
-                    || (part.expr.equals(">") && countArgs > part.value)
-                    || (part.expr.equals("<") && countArgs < part.value)
-                    || (part.expr.equals("==") && countArgs == part.value)
-                    || (part.expr.equals(">=") && countArgs >= part.value)) {
-                return part.answer;
+            String answer = null;
+            if ("+".equals(part.arg)) {
+                answer = getAnswerByStrategyOfSum(part, questions, answers);
+            } else {
+                answer = getAnswerByStrategyOfArgsCounting(part, questions, answers);
+            }
+            if (answer != null) {
+                return answer;
             }
         }
 
         return "error";
+    }
+
+    private String getAnswerByStrategyOfSum(Part part, List<Question> questions, List<Answer> answers) {
+        int sum = questions.stream()
+                .mapToInt(question -> answers.stream()
+                        .filter(answer -> answer.getId() == question.getIdAnswer())
+                        .findFirst()
+                        .get()
+                        .getValue())
+                .sum();
+        if ((part.expr.equals("<=") && sum <= part.value)
+                || (part.expr.equals(">") && sum > part.value)
+                || (part.expr.equals("<") && sum < part.value)
+                || (part.expr.equals("==") && sum == part.value)
+                || (part.expr.equals(">=") && sum >= part.value)) {
+            return part.answer;
+        }
+        return null;
+    }
+
+    private String getAnswerByStrategyOfArgsCounting(Part part, List<Question> questions, List<Answer> answers) {
+        long countArgs = questions.stream()
+                .filter(question -> Objects.equals(answers.get(question.getIdAnswer()).getAnswer(), part.arg))
+                .count();
+        if ((part.expr.equals("<=") && countArgs <= part.value)
+                || (part.expr.equals(">") && countArgs > part.value)
+                || (part.expr.equals("<") && countArgs < part.value)
+                || (part.expr.equals("==") && countArgs == part.value)
+                || (part.expr.equals(">=") && countArgs >= part.value)) {
+            return part.answer;
+        }
+        return null;
     }
 
     private class Part {
