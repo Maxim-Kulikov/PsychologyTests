@@ -9,7 +9,7 @@ public class Test implements Serializable {
     private String name;
     private String formula;
     private List<Question> questions;
-    private List<Answer> answers;
+    private Answers answers;
 
     public int getId() {
         return id;
@@ -23,7 +23,7 @@ public class Test implements Serializable {
         return questions;
     }
 
-    public List<Answer> getAnswers() {
+    public Answers getAnswers() {
         return answers;
     }
 
@@ -55,11 +55,11 @@ public class Test implements Serializable {
         this.questions = questions;
     }
 
-    public void setAnswers(List<Answer> answers) {
+    public void setAnswers(Answers answers) {
         this.answers = answers;
     }
 
-    public Test(int id, int idTopic, String name, String formula, List<Question> questions, List<Answer> answers) {
+    public Test(int id, int idTopic, String name, String formula, List<Question> questions, Answers answers) {
         this.id = id;
         this.idTopic = idTopic;
         this.name = name;

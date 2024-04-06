@@ -4,7 +4,6 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.CompoundButton;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
@@ -46,7 +45,7 @@ public class QuestionAdapter extends RecyclerView.Adapter<QuestionAdapter.ViewHo
         holder.questionTextView.setText(question.getQuestion());
         holder.answerRadioGroup.removeAllViews(); // Очищаем список RadioButton
 
-        List<Answer> answers = test.getAnswers();
+        List<Answer> answers = test.getAnswers().getAnswers();
         for (Answer answer : answers) {
             RadioButton radioButton = new RadioButton(context);
             radioButton.setText(answer.getAnswer());

@@ -36,7 +36,7 @@ public enum ResultCounter {
 
     private String countArgAndGetResult(Test test, List<Part> partList) {
         List<Question> questions = test.getQuestions();
-        List<Answer> answers = test.getAnswers();
+        List<Answer> answers = test.getAnswers().getAnswers();
 
         for (Part part : partList) {
             long countArgs = questions.stream()

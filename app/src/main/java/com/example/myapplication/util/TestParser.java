@@ -4,12 +4,12 @@ import android.content.Context;
 
 import com.example.myapplication.R;
 import com.example.myapplication.model.Answer;
+import com.example.myapplication.model.Answers;
 import com.example.myapplication.model.Question;
 import com.example.myapplication.model.Test;
 import com.example.myapplication.model.Topic;
 
 import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.InputStream;
@@ -17,10 +17,17 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
+import java.util.stream.Collectors;
 
 public class TestParser {
-    public static List<Topic> parseTopics(Context context) {
-        List<Test> tests = parseTests(context);
+
+    public List<Topic> getTopics(Context context) {
+        List<Answers> answersList = parseAllAnswers(context);
+        List<Test> testList = parseAllTests(context, answersList);
+        return parseTopics(context, testList);
+    }
+
+    private List<Topic> parseTopics(Context context, List<Test> testList) {
         List<Topic> topics = new ArrayList<>();
 
         try {
@@ -34,10 +41,9 @@ public class TestParser {
                     JSONArray jsonArray = jsonObject.getJSONArray("topics");
                     for (int i = 0; i < jsonArray.length(); i++) {
                         JSONObject jsonTopic = jsonArray.getJSONObject(i);
-                        Topic topic = new Topic(jsonTopic.getInt("id"), jsonTopic.getString("name"));
-                        tests.stream()
-                                .filter(test -> test.getIdTopic() == topic.getId())
-                                .forEach(test -> topic.getTestList().add(test));
+                        int id = jsonTopic.getInt("id");
+                        String name = jsonTopic.getString("name");
+                        Topic topic = new Topic(id, name, findTestListByIdTopic(testList, id));
                         topics.add(topic);
                     }
                     inputStream.close();
@@ -49,7 +55,7 @@ public class TestParser {
         return topics;
     }
 
-    private static List<Test> parseTests(Context context) {
+    private List<Test> parseAllTests(Context context, List<Answers> answersList) {
         List<Test> tests = new ArrayList<>();
 
         try {
@@ -59,7 +65,7 @@ public class TestParser {
                     int resourceId = field.getInt(null);
                     InputStream inputStream = context.getResources().openRawResource(resourceId);
                     String jsonString = convertStreamToString(inputStream);
-                    Test test = parseTest(jsonString, field.getName(), context);
+                    Test test = parseTest(jsonString, answersList);
                     if (test != null) {
                         tests.add(test);
                     }
@@ -73,7 +79,7 @@ public class TestParser {
         return tests;
     }
 
-    private static Test parseTest(String jsonString, String fileName, Context context) {
+    private Test parseTest(String jsonString, List<Answers> answersList) {
         try {
             JSONObject testObject = new JSONObject(jsonString);
             int id = testObject.getInt("id");
@@ -90,67 +96,76 @@ public class TestParser {
                 questions.add(new Question(idQuestion, question, -1));
             }
 
-
-            return new Test(id, idTopic, name, formula, questions, parseAnswers(fileName, context));
+            return new Test(id, idTopic, name, formula, questions, findAnswersByIdTest(answersList, id));
         } catch (Exception e) {
             e.printStackTrace();
             return null;
         }
     }
 
-    private static List<Answer> parseAnswers(String testsFileName, Context context) {
-        List<Answer> answers = new ArrayList<>();
+    private List<Answers> parseAllAnswers(Context context) {
+        List<Answers> answersList = new ArrayList<>();
 
         try {
             Field[] fields = R.raw.class.getFields();
-            String requiredFileName = "answers" + extractNumbers(testsFileName);
             for (Field field : fields) {
-                if (field.getName().startsWith(requiredFileName)) {
+                if (field.getName().startsWith("answers")) {
                     int resourceId = field.getInt(null);
                     InputStream inputStream = context.getResources().openRawResource(resourceId);
                     String jsonString = convertStreamToString(inputStream);
-                    answers = parseAnswers(jsonString);
+                    Answers answers = parseAnswers(jsonString);
+                    if (answers != null) {
+                        answersList.add(answers);
+                    }
                     inputStream.close();
-                    break;
                 }
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
 
-        return answers;
+        return answersList;
     }
 
-    private static List<Answer> parseAnswers(String jsonString) throws JSONException {
+    private Answers parseAnswers(String jsonString) {
+        int id;
+        int idTest;
         List<Answer> answers = new ArrayList<>();
-        JSONObject jsonObject = new JSONObject(jsonString);
-        JSONArray answersArray = jsonObject.getJSONArray("answers");
 
-        for (int i = 0; i < answersArray.length(); i++) {
-            JSONObject answerObject = answersArray.getJSONObject(i);
-            int idAnswer = answerObject.getInt("id");
-            String answer = answerObject.getString("answer");
-            int value = answerObject.getInt("value");
-
-            answers.add(new Answer(idAnswer, answer, value));
+        try {
+            JSONObject answersJSONObject = new JSONObject(jsonString);
+            id = answersJSONObject.getInt("id");
+            idTest = answersJSONObject.getInt("idTest");
+            JSONArray answersJSONArray = answersJSONObject.getJSONArray("answers");
+            for (int i = 0; i < answersJSONArray.length(); i++) {
+                JSONObject answerJSONObject = answersJSONArray.getJSONObject(i);
+                Answer answer = new Answer(answerJSONObject.getInt("id"),
+                        answerJSONObject.getString("answer"),
+                        answerJSONObject.getInt("value"));
+                answers.add(answer);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
         }
-
-        return answers;
+        return new Answers(id, idTest, answers);
     }
 
-    private static String convertStreamToString(InputStream inputStream) {
+    private String convertStreamToString(InputStream inputStream) {
         Scanner scanner = new Scanner(inputStream).useDelimiter("\\A");
         return scanner.hasNext() ? scanner.next() : "";
     }
 
-    private static String extractNumbers(String filename) {
-        StringBuilder sb = new StringBuilder();
-        for (int i = 0; i < filename.length(); i++) {
-            char ch = filename.charAt(i);
-            if (Character.isDigit(ch)) {
-                sb.append(ch);
-            }
-        }
-        return sb.toString();
+    private List<Test> findTestListByIdTopic(List<Test> testList, int idTopic) {
+        return testList.stream()
+                .filter(test -> test.getIdTopic() == idTopic)
+                .collect(Collectors.toList());
+    }
+
+    private Answers findAnswersByIdTest(List<Answers> answersList, int idTest) {
+        return answersList.stream()
+                .filter(answers -> answers.getIdTest() == idTest)
+                .findFirst()
+                .get();
     }
 }

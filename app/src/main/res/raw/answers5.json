@@ -1,0 +1,26 @@
+{
+  "id": 5,
+  "idTest": 5,
+  "answers": [
+    {
+      "id": 0,
+      "answer": "да",
+      "value": 3
+    },
+    {
+      "id": 1,
+      "answer": "пожалуй",
+      "value": 2
+    },
+    {
+      "id": 2,
+      "answer": "иногда",
+      "value": 1
+    },
+    {
+      "id": 3,
+      "answer": "нет",
+      "value": 0
+    }
+  ]
+}

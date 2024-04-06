@@ -13,7 +13,8 @@ public enum TopicsDB {
     private List<Topic> topics;
 
     public void initialize(Context context) {
-        topics = TestParser.parseTopics(context);
+        TestParser testParser = new TestParser();
+        topics = testParser.getTopics(context);
     }
 
     public List<Topic> getTopics() {

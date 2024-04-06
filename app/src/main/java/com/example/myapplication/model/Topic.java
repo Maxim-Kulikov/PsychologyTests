@@ -1,18 +1,17 @@
 package com.example.myapplication.model;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.List;
 
 public class Topic implements Serializable {
     private int id;
     private String name;
-    private List<Test> testList;
+    private final List<Test> testList;
 
-    public Topic(int id, String name) {
+    public Topic(int id, String name, List<Test> testList) {
         this.id = id;
         this.name = name;
-        this.testList = new ArrayList<>();
+        this.testList = testList;
     }
 
     public void setId(int id) {

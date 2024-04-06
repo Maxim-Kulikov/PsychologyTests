@@ -1,11 +1,11 @@
 {
-  "id": 1,
-  "idTest": 1,
+  "id": 4,
+  "idTest": 4,
   "answers": [
     {
       "id": 0,
       "answer": "да",
-      "value": 0
+      "value": 1
     },
     {
       "id": 1,
