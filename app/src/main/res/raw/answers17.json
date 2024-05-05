@@ -1,0 +1,16 @@
+{
+  "id": 17,
+  "idTest": 17,
+  "answers": [
+    {
+      "id": 0,
+      "answer": "да",
+      "value": 1
+    },
+    {
+      "id": 1,
+      "answer": "нет",
+      "value": 0
+    }
+  ]
+}

@@ -10,6 +10,7 @@ import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.myapplication.model.Question;
+import com.example.myapplication.model.Result;
 import com.example.myapplication.model.Test;
 import com.example.myapplication.service.ResultCounter;
 
@@ -27,8 +28,15 @@ public class TestResultActivity extends AppCompatActivity {
         setContentView(R.layout.activity_test_result);
 
         TextView resultText = findViewById(R.id.resultText);
+        TextView totalResult = findViewById(R.id.totalResult);
+        TextView description = findViewById(R.id.description);
+
         Test test = (Test) getIntent().getSerializableExtra("test");
-        resultText.setText(resultCounter.getResult(test));
+        Result result = resultCounter.getResult(test);
+
+        resultText.setText(result.getResultText());
+        totalResult.setText(result.getTotalResult());
+        description.setText(result.getDescription());
 
         Button finishButton = findViewById(R.id.finishButton);
         finishButton.setOnClickListener(new View.OnClickListener() {

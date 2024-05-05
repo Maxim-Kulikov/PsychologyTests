@@ -2,16 +2,19 @@ package com.example.myapplication.service;
 
 import com.example.myapplication.model.Answer;
 import com.example.myapplication.model.Question;
+import com.example.myapplication.model.Result;
 import com.example.myapplication.model.Test;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 public enum ResultCounter {
     INSTANCE;
 
-    public String getResult(Test test) {
+    public Result getResult(Test test) {
         String formula = test.getFormula();
         List<Part> partList = getParts(formula);
         return countArgAndGetResult(test, partList);
@@ -34,23 +37,53 @@ public enum ResultCounter {
         return partList;
     }
 
-    private String countArgAndGetResult(Test test, List<Part> partList) {
+    private Result countArgAndGetResult(Test test, List<Part> partList) {
         List<Question> questions = test.getQuestions();
         List<Answer> answers = test.getAnswers().getAnswers();
 
+
+        String totalResult = getCommonResults(questions, answers).toString();
+
         for (Part part : partList) {
-            String answer = null;
-            if ("+".equals(part.arg)) {
-                answer = getAnswerByStrategyOfSum(part, questions, answers);
+            String resultText = null;
+            if ("%".equals(part.arg)) {
+                resultText = getAnswerByStrategyOfPercent(part, questions, answers);
+            } else if ("+".equals(part.arg)) {
+                resultText = getAnswerByStrategyOfSum(part, questions, answers);
             } else {
-                answer = getAnswerByStrategyOfArgsCounting(part, questions, answers);
+                resultText = getAnswerByStrategyOfArgsCounting(part, questions, answers);
             }
-            if (answer != null) {
-                return answer;
+            if (resultText != null) {
+                return new Result(test.getDescription(), totalResult, resultText);
             }
         }
 
-        return "error";
+        return new Result();
+    }
+
+    private StringBuilder getCommonResults(List<Question> questions, List<Answer> answers) {
+        StringBuilder result = new StringBuilder();
+        Map<String, Integer> resultMap = new HashMap<>();
+        answers.forEach(answer -> resultMap.put(answer.getAnswer(), 0));
+        questions.forEach(question -> {
+            Answer answer = answers.stream().filter(x -> x.getId() == question.getIdAnswer()).findFirst().get();
+            resultMap.put(answer.getAnswer(), resultMap.get(answer.getAnswer()) + 1);
+        });
+        resultMap.forEach((key, value) -> result.append("Вы ответили ").append(key).append(" ").append(value).append(" раз\n"));
+        return result;
+    }
+
+    private String getAnswerByStrategyOfPercent(Part part, List<Question> questions, List<Answer> answers) {
+        long count = questions.stream().filter(question -> question.getIdAnswer() == 0).count();
+        double countPercent = (count / (double) questions.size()) * 100;
+        if ((part.expr.equals("<=") && countPercent <= part.value)
+                || (part.expr.equals(">") && countPercent > part.value)
+                || (part.expr.equals("<") && countPercent < part.value)
+                || (part.expr.equals("==") && countPercent == part.value)
+                || (part.expr.equals(">=") && countPercent >= part.value)) {
+            return part.answer;
+        }
+        return null;
     }
 
     private String getAnswerByStrategyOfSum(Part part, List<Question> questions, List<Answer> answers) {

@@ -85,6 +85,7 @@ public class TestParser {
             int id = testObject.getInt("id");
             int idTopic = testObject.getInt("idTopic");
             String name = testObject.getString("name");
+            String description = testObject.getString("description");
             String formula = testObject.getString("formula");
             JSONArray questionsArray = testObject.getJSONArray("questions");
             List<Question> questions = new ArrayList<>();
@@ -96,7 +97,7 @@ public class TestParser {
                 questions.add(new Question(idQuestion, question, -1));
             }
 
-            return new Test(id, idTopic, name, formula, questions, findAnswersByIdTest(answersList, id));
+            return new Test(id, idTopic, name, description, formula, questions, findAnswersByIdTest(answersList, id));
         } catch (Exception e) {
             e.printStackTrace();
             return null;

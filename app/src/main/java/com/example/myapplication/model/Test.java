@@ -7,6 +7,7 @@ public class Test implements Serializable {
     private int id;
     private int idTopic;
     private String name;
+    private String description;
     private String formula;
     private List<Question> questions;
     private Answers answers;
@@ -25,6 +26,14 @@ public class Test implements Serializable {
 
     public Answers getAnswers() {
         return answers;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 
     public void setName(String name) {
@@ -59,10 +68,11 @@ public class Test implements Serializable {
         this.answers = answers;
     }
 
-    public Test(int id, int idTopic, String name, String formula, List<Question> questions, Answers answers) {
+    public Test(int id, int idTopic, String name, String description, String formula, List<Question> questions, Answers answers) {
         this.id = id;
         this.idTopic = idTopic;
         this.name = name;
+        this.description = description;
         this.formula = formula;
         this.questions = questions;
         this.answers = answers;
